@@ -17,7 +17,17 @@ The first call to `pipeline("summarization", ...)` downloads the model. Plan ~3 
 
 Committed:
 - `summarize.py` — your implementation
-- Updated `README.md` — 1–2 paragraphs documenting model id, corpus version, re-run command (this section is the template; replace it)
+- Updated `README.md` — Model Identification and Architecture
+The summarization pipeline utilizes the sshleifer/distilbart-cnn-6-6 model, which is a specialized version of the BART (Bidirectional and Auto-Regressive Transformers) architecture. This specific model is a "distilled" version, meaning it has been compressed from the original facebook/bart-large-cnn to provide a faster inference time without a significant loss in performance. It consists of 6 encoder layers and 6 decoder layers, making it highly efficient for CPU-based environments. The model was fine-tuned on the CNN/DailyMail dataset, which specializes in summarizing news articles by generating abstractive summaries that capture the most relevant entities and events in a concise format.
+
+Tech News Corpus and Reference Data
+The evaluation uses the M6 Tech News Corpus version, consisting of a filtered subset of 120 news articles focused on technology, entertainment, and digital culture. The reference summaries are provided in the data/tech_news_summaries_reference.csv file. These summaries serve as the "ground truth" for calculating our quality metrics. By comparing the model's generated output against these editor-authored references, we can measure how well the model handles technical jargon, product names, and journalistic narrative structures.
+
+Reproducibility and Re-run Command
+To ensure full reproducibility of the results and the generated metrics (summary_metrics.json), the evaluation can be executed using the automated Makefile. Anyone with access to this repository can re-run the full evaluation pipeline across the 120-article set by executing the following command in their terminal:
+make summarize
+This command orchestrates the loading of the CSV files, the initialization of the Hugging Face pipeline with deterministic beam search (num_beams=4), and the calculation of ROUGE-1, ROUGE-2, and ROUGE-L F1 scores using the rouge-score library with stemming enabled for more accurate linguistic matching.
+
 - `summary_predictions.csv` — 120 rows with reference, predicted, and per-summary ROUGE
 - `summary_metrics.json` — aggregate ROUGE-1/2/L F1
 - `integrated-evaluation-report.md` — six-section integrated report (the M7 deliverable). Includes an optional Section 7 (Challenge Extensions) for learners completing challenge tiers — see the integration's learner guide.
