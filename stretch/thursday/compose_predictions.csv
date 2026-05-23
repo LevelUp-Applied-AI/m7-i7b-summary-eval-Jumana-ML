@@ -1,0 +1,21 @@
+qid,question,strategy_a_pred,strategy_b_pred,gold_answer,strategy_a_em,strategy_a_f1,strategy_b_em,strategy_b_f1
+Q1,What condition does John Mayer have?,tissue inflammation,granuloma,granuloma,0,0.0,1,1.0
+Q2,What is the name of Mayer's delayed album?,Born and Raised,Born and Raised,Born and Raised,1,1.0,1,1.0
+Q3,Where was Soulja Boy arrested?,Georgia,Atlanta,Georgia,1,1.0,0,0.0
+Q4,How old is the rapper DeAndre Cortez Way?,19,19,19,1,1.0,1,1.0
+Q5,How much did the USPS spend without justification?,"$77,757","more than $792,000","$792,000",0,0.0,0,0.5
+Q6,What was the reported loss for the 2009 fiscal year?,$3.8 billion,$3.8 billion,$3.8 billion,1,1.0,1,1.0
+Q7,What brand of shoes does Eva Longoria have in every color?,Christian Louboutin espadrille wedges,cobblestones in Paris wearing them,Christian Louboutin,0,0.6666666666666666,0,0.0
+Q8,What is her most expensive item?,My hot-pink crocodile Hermès Birkin bag,Mrs. Parker,Hermes Birkin bag,0,0.4444444444444444,0,0.0
+Q9,Where was the single Gypsy filmed?,"Barcelona, Spain","Barcelona, Spain",Barcelona,0,0.6666666666666666,0,0.6666666666666666
+Q10,In which Bond movie did Vijay Amritraj appear?,Octopussy,Gypsy,Octopussy,1,1.0,0,0.0
+Q11,When was the foreign language category launched?,late 1940s,late 1940s,late 1940s,1,1.0,1,1.0
+Q12,Which film would not have won last year if it had not been in English?,The Hurt Locker,Oscar,Slumdog Millionaire,0,0.0,0,0.0
+Q13,Who is Mandy Moore engaged to?,Ryan Adams,Ryan Adams,Ryan Adams,1,1.0,1,1.0
+Q14,What kind of music is Adams known for producing?,rock,rock music,rock music with a country influence,0,0.33333333333333337,0,0.5714285714285715
+Q15,Where did Susan Boyle appear last weekend?,West Lothian in Scotland,"Britain's Got Talent""",Britain's Got Talent,0,0.0,1,1.0
+Q16,Who did Susan Boyle live with?,Amanda Holden,"cat, Pebbles",her cat,0,0.0,0,0.5
+Q17,Where did Michael Jackson fans gather on Monday?,London,London,London's O2 Arena,0,0.0,0,0.0
+Q18,Who said I feel like I've lost a brother?,Gemma White and Terry Shaw,Michael Jackson,Gemma White,0,0.5714285714285715,0,0.0
+Q19,What did Frederic Mitterrand write about in his book?,acts of sexual commerce,sexual tourism,sexual tourism,0,0.3333333333333333,1,1.0
+Q20,Which French President supports Mitterrand?,Nicolas Sarkozy,Nicolas Sarkozy,Nicolas Sarkozy,1,1.0,1,1.0
