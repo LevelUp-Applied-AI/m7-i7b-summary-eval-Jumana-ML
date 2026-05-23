@@ -39,11 +39,33 @@ def qa_full_article(qa, question: str, article: str, max_chunk: int = 384) -> st
 
     Returns the answer span from the highest-scoring chunk.
     """
-    # TODO: token-count the article (use a tokenizer or a rough word count); if it fits, call qa once and return predict_one's answer
-    # TODO: if it exceeds max_chunk, split into overlapping windows (e.g., 384-token windows with 64-token overlap)
-    # TODO: call qa on each window; track the pipeline's score per window
-    # TODO: return the answer string from the highest-scoring window
-    raise NotImplementedError("qa_full_article not implemented")
+    #token-count the article (use a tokenizer or a rough word count); if it fits, call qa once and return predict_one's answer
+    words = article.split()
+    if len(words) <= max_chunk:
+        result = qa_utils.predict_one(qa, question, article)
+        return result["answer"]
+
+    #if it exceeds max_chunk, split into overlapping windows (e.g., 384-token windows with 64-token overlap)
+    best_answer = ""
+    max_score = -1.0
+    stride = max_chunk - 64  # 64 tokens overlap
+
+    for i in range(0, len(words), stride):
+        window_text = " ".join(words[i : i + max_chunk])
+        
+        #call qa on each window; track the pipeline's score per window
+        result = qa_utils.predict_one(qa, question, window_text)
+        
+        if result["score"] > max_score:
+            max_score = result["score"]
+            best_answer = result["answer"]
+        
+        # Break if we've reached the end of the article
+        if i + max_chunk >= len(words):
+            break
+
+    #return the answer string from the highest-scoring window
+    return best_answer
 
 
 def qa_via_summary(qa, summ, question: str, article: str, max_summary_length: int = 120) -> str:
@@ -52,10 +74,14 @@ def qa_via_summary(qa, summ, question: str, article: str, max_summary_length: in
 
     Returns the answer string. Uses Integration 7B's summarize_one (do_sample=False, num_beams=4).
     """
-    # TODO: summarize the article using summarize.summarize_one with the given max_summary_length
-    # TODO: run QA on the summary using qa_utils.predict_one
-    # TODO: return the answer string
-    raise NotImplementedError("qa_via_summary not implemented")
+    #summarize the article using summarize.summarize_one with the given max_summary_length
+    summary_text = summarize.summarize_one(summ, article, max_length=max_summary_length)
+    
+    #run QA on the summary using qa_utils.predict_one
+    result = qa_utils.predict_one(qa, question, summary_text)
+    
+    #return the answer string
+    return result["answer"]
 
 
 def evaluate_strategies(qa, summ, test_set: pd.DataFrame, articles_df: pd.DataFrame) -> dict:
@@ -73,11 +99,57 @@ def evaluate_strategies(qa, summ, test_set: pd.DataFrame, articles_df: pd.DataFr
           ],
         }
     """
-    # TODO: for each test_set row, look up the article in articles_df by article_id
-    # TODO: call qa_full_article (Strategy A) and qa_via_summary (Strategy B); record predictions
-    # TODO: compute EM + F1 for each strategy via qa_utils.exact_match / qa_utils.token_f1
-    # TODO: aggregate per-strategy means; return the combined dict
-    raise NotImplementedError("evaluate_strategies not implemented")
+    predictions = []
+    
+    #for each test_set row, look up the article in articles_df by article_id
+    for _, row in test_set.iterrows():
+        qid = row["qid"]
+        article_id = row["article_id"]
+        question = row["question"]
+        gold_answer = row["gold_answer"]
+        
+        # Get article text
+        article_text = articles_df[articles_df["article_id"] == article_id]["text"].values[0]
+        
+        #call qa_full_article (Strategy A) and qa_via_summary (Strategy B); record predictions
+        pred_a = qa_full_article(qa, question, article_text)
+        pred_b = qa_via_summary(qa, summ, question, article_text)
+        
+        #compute EM + F1 for each strategy via qa_utils.exact_match / qa_utils.token_f1
+        em_a = qa_utils.exact_match(pred_a, gold_answer)
+        f1_a = qa_utils.token_f1(pred_a, gold_answer)
+        
+        em_b = qa_utils.exact_match(pred_b, gold_answer)
+        f1_b = qa_utils.token_f1(pred_b, gold_answer)
+        
+        predictions.append({
+            "qid": qid,
+            "question": question,
+            "strategy_a_pred": pred_a,
+            "strategy_b_pred": pred_b,
+            "gold_answer": gold_answer,
+            "strategy_a_em": em_a,
+            "strategy_a_f1": f1_a,
+            "strategy_b_em": em_b,
+            "strategy_b_f1": f1_b,
+        })
+
+    #aggregate per-strategy means; return the combined dict
+    results_df = pd.DataFrame(predictions)
+    
+    return {
+        "strategy_a": {
+            "em": float(results_df["strategy_a_em"].mean()),
+            "f1": float(results_df["strategy_a_f1"].mean()),
+            "n": len(predictions)
+        },
+        "strategy_b": {
+            "em": float(results_df["strategy_b_em"].mean()),
+            "f1": float(results_df["strategy_b_f1"].mean()),
+            "n": len(predictions)
+        },
+        "predictions": predictions,
+    }
 
 
 def main() -> None:
